@@ -1,5 +1,6 @@
 using System;
 using System.IO;
+using System.Runtime.InteropServices;
 using System.Threading.Tasks;
 using Windows.Devices.Bluetooth;
 using Windows.Devices.Enumeration;
@@ -8,6 +9,61 @@ namespace BtToggle;
 
 class Program
 {
+    // Native Bluetooth API for real connect/disconnect
+    [DllImport("BluetoothApis.dll", SetLastError = true)]
+    private static extern uint BluetoothSetServiceState(
+        IntPtr hRadio,
+        ref BLUETOOTH_DEVICE_INFO pbtdi,
+        ref Guid pGuidService,
+        uint dwServiceFlags);
+
+    [DllImport("BluetoothApis.dll", SetLastError = true)]
+    private static extern IntPtr BluetoothFindFirstRadio(
+        ref BLUETOOTH_FIND_RADIO_PARAMS pbtfrp,
+        out IntPtr phRadio);
+
+    [DllImport("kernel32.dll", SetLastError = true)]
+    private static extern bool CloseHandle(IntPtr hObject);
+
+    [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Unicode)]
+    private struct BLUETOOTH_DEVICE_INFO
+    {
+        public uint dwSize;
+        public ulong Address;
+        public uint ulClassofDevice;
+        [MarshalAs(UnmanagedType.Bool)] public bool fConnected;
+        [MarshalAs(UnmanagedType.Bool)] public bool fRemembered;
+        [MarshalAs(UnmanagedType.Bool)] public bool fAuthenticated;
+        public SYSTEMTIME stLastSeen;
+        public SYSTEMTIME stLastUsed;
+        [MarshalAs(UnmanagedType.ByValTStr, SizeConst = 248)]
+        public string szName;
+    }
+
+    [StructLayout(LayoutKind.Sequential)]
+    private struct SYSTEMTIME
+    {
+        public ushort wYear, wMonth, wDayOfWeek, wDay;
+        public ushort wHour, wMinute, wSecond, wMilliseconds;
+    }
+
+    [StructLayout(LayoutKind.Sequential)]
+    private struct BLUETOOTH_FIND_RADIO_PARAMS
+    {
+        public uint dwSize;
+    }
+
+    private const uint BLUETOOTH_SERVICE_ENABLE = 0x01;
+    private const uint BLUETOOTH_SERVICE_DISABLE = 0x00;
+
+    // Well-known Bluetooth audio service GUIDs
+    private static readonly Guid AudioSinkServiceId =
+        new("0000110b-0000-1000-8000-00805f9b34fb"); // A2DP Sink
+    private static readonly Guid HandsfreeServiceId =
+        new("0000111e-0000-1000-8000-00805f9b34fb"); // Handsfree
+    private static readonly Guid AudioSourceServiceId =
+        new("0000110a-0000-1000-8000-00805f9b34fb"); // A2DP Source
+
     static async Task<int> Main(string[] args)
     {
         if (args.Length < 1)
@@ -23,15 +79,14 @@ class Program
 
         return command switch
         {
-            "connect" => await ConnectAsync(macAddress),
-            "disconnect" => await DisconnectAsync(macAddress),
+            "connect" => await SetDeviceServiceState(macAddress, enable: true),
+            "disconnect" => await SetDeviceServiceState(macAddress, enable: false),
             _ => ShowUnknownCommand(command)
         };
     }
 
     private static string? LoadMacAddress()
     {
-        // Look for .env next to the executable, then in the project root
         var envPaths = new[]
         {
             Path.Combine(AppContext.BaseDirectory, ".env"),
@@ -57,84 +112,69 @@ class Program
         return null;
     }
 
-    private static async Task<int> ConnectAsync(string targetMac)
+    private static async Task<int> SetDeviceServiceState(string targetMac, bool enable)
     {
-        var device = await GetDeviceAsync(targetMac);
-        if (device == null) return 1;
+        var action = enable ? "Connecting" : "Disconnecting";
+        var flag = enable ? BLUETOOTH_SERVICE_ENABLE : BLUETOOTH_SERVICE_DISABLE;
 
-        using (device)
-        {
-            if (device.ConnectionStatus == BluetoothConnectionStatus.Connected)
-            {
-                Console.WriteLine($"Already connected: {device.Name}");
-                return 0;
-            }
-
-            // Access an RFCOMM service to trigger the Bluetooth Classic connection.
-            // For audio devices, requesting services initiates the connection.
-            var servicesResult = await device.GetRfcommServicesAsync();
-
-            if (servicesResult.Error != BluetoothError.Success)
-            {
-                Console.Error.WriteLine($"Failed to connect: {servicesResult.Error}");
-                return 1;
-            }
-
-            Console.WriteLine($"Connected: {device.Name}");
-            return 0;
-        }
-    }
-
-    private static async Task<int> DisconnectAsync(string targetMac)
-    {
-        var selector = BluetoothDevice.GetDeviceSelectorFromPairingState(true);
-        var devices = await DeviceInformation.FindAllAsync(selector);
-
-        var macLookup = ParseMacAddress(targetMac);
-
-        foreach (var deviceInfo in devices)
-        {
-            var btDevice = await BluetoothDevice.FromIdAsync(deviceInfo.Id);
-            if (btDevice == null) continue;
-
-            using (btDevice)
-            {
-                if (btDevice.BluetoothAddress == macLookup)
-                {
-                    if (btDevice.ConnectionStatus == BluetoothConnectionStatus.Disconnected)
-                    {
-                        Console.WriteLine($"Already disconnected: {btDevice.Name}");
-                        return 0;
-                    }
-
-                    // Disposing the BluetoothDevice and its services signals the OS to drop the connection.
-                    // Force GC to release COM references that hold the connection open.
-                    Console.WriteLine($"Disconnecting: {btDevice.Name}");
-                }
-            }
-        }
-
-        // Force release of all COM references
-        GC.Collect();
-        GC.WaitForPendingFinalizers();
-
-        Console.WriteLine("Disconnected.");
-        return 0;
-    }
-
-    private static async Task<BluetoothDevice?> GetDeviceAsync(string targetMac)
-    {
-        var macAddress = ParseMacAddress(targetMac);
-        var device = await BluetoothDevice.FromBluetoothAddressAsync(macAddress);
+        // Use WinRT to get the device name and verify it exists
+        var macValue = ParseMacAddress(targetMac);
+        var device = await BluetoothDevice.FromBluetoothAddressAsync(macValue);
 
         if (device == null)
         {
             Console.Error.WriteLine($"Device not found: {targetMac}");
             Console.Error.WriteLine("Make sure the device is paired in Windows Bluetooth settings.");
-            return null;
+            return 1;
         }
 
-        return device;
+        var deviceName = device.Name;
+        device.Dispose();
+
+        // Get a handle to the local Bluetooth radio
+        var radioParams = new BLUETOOTH_FIND_RADIO_PARAMS
+        {
+            dwSize = (uint)Marshal.SizeOf<BLUETOOTH_FIND_RADIO_PARAMS>()
+        };
+
+        var findHandle = BluetoothFindFirstRadio(ref radioParams, out var radioHandle);
+        if (findHandle == IntPtr.Zero)
+        {
+            Console.Error.WriteLine("No Bluetooth radio found.");
+            return 1;
+        }
+
+        // Set up the device info struct
+        var deviceInfo = new BLUETOOTH_DEVICE_INFO
+        {
+            dwSize = (uint)Marshal.SizeOf<BLUETOOTH_DEVICE_INFO>(),
+            Address = macValue,
+        };
+
+        Console.WriteLine($"{action}: {deviceName}");
+
+        // Toggle each audio service
+        var services = new[] { AudioSinkServiceId, HandsfreeServiceId, AudioSourceServiceId };
+        var anySuccess = false;
+
+        foreach (var serviceId in services)
+        {
+            var guid = serviceId;
+            var result = BluetoothSetServiceState(radioHandle, ref deviceInfo, ref guid, flag);
+            if (result == 0)
+                anySuccess = true;
+        }
+
+        CloseHandle(radioHandle);
+
+        if (!anySuccess)
+        {
+            Console.Error.WriteLine($"Failed to {(enable ? "connect" : "disconnect")}.");
+            return 1;
+        }
+
+        Console.WriteLine(enable ? "Connected." : "Disconnected.");
+        return 0;
     }
 
     private static ulong ParseMacAddress(string mac)

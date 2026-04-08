@@ -18,7 +18,7 @@
 ---
 
 ## What's Working Now
-Project builds. Connect/disconnect implemented but **untested** — needs real MAC address and Windows-side testing.
+Connect and disconnect working on Sony WH-1000XM5.
 
 ```bash
 cd src && /mnt/c/Program\ Files/dotnet/dotnet.exe build          # build
@@ -37,11 +37,11 @@ _None_
 
 ### Sprint 1 – Connect/Disconnect (Active)
 - [x] Scaffold .NET 10 console project with WinRT Bluetooth APIs
-- [x] `bt-toggle connect` — initial implementation (#1)
-- [x] `bt-toggle disconnect` — initial implementation (#1)
-- [ ] Replace placeholder MAC address with real Sony WH-1000XM5 address
-- [ ] Test connect on Windows
-- [ ] Test disconnect on Windows
+- [x] `bt-toggle connect` — working (#1)
+- [x] `bt-toggle disconnect` — working (#1)
+- [x] MAC address loaded from .env (gitignored)
+- [x] Tested connect on Windows
+- [x] Tested disconnect on Windows
 
 ### Sprint 2 – [Name] (Target: TBD)
 - [ ] [Feature/task]

@@ -18,6 +18,16 @@ Record of key decisions made during the project. **Newest first.**
 
 ---
 
+### DEC-003: BluetoothSetServiceState P/Invoke for connect/disconnect
+**Date:** 2026-04-08
+**Decision:** Use native `BluetoothSetServiceState` via P/Invoke to toggle A2DP/Handsfree services on the device.
+**Reasoning:** WinRT `BluetoothDevice` API can discover and query devices but has no method to disconnect Bluetooth Classic audio. Disposing the WinRT device object and forcing GC does not actually disconnect. The native Windows Bluetooth API (`BluetoothApis.dll`) provides `BluetoothSetServiceState` which enables/disables specific services — this triggers a real OS-level connect/disconnect without unpairing.
+**Alternatives considered:**
+- **WinRT dispose + GC** — rejected. Tested, does not disconnect audio devices despite being commonly suggested online.
+- **DeviceInformation enable/disable** — rejected. Equivalent to Disable-PnpDevice, removes device from system.
+
+---
+
 ### DEC-002: Dev Environment — Windows-side .NET SDK called from WSL
 **Date:** 2026-04-08
 **Decision:** Install .NET SDK on Windows, call `dotnet.exe` from WSL. Source stays on WSL filesystem.
