@@ -10,8 +10,8 @@
 
 | # | Task | Status | Notes |
 |---|------|--------|-------|
-| 0.1 | Define first feature | ⬜ Todo | |
-| 0.2 | Create first GitHub issue | ⬜ Todo | |
+| 0.1 | Define first feature | ✅ Done | bt-toggle connect/disconnect for Sony WH-1000XM5 |
+| 0.2 | Create first GitHub issue | ✅ Done | #1 |
 
 **Status legend:** ⬜ Todo | 🔄 In Progress | ✅ Done | 🚫 Blocked | ⏸️ Paused
 
@@ -34,8 +34,9 @@ _None_
 
 ## Sprint Backlog
 
-### Sprint 1 – [Name] (Target: TBD)
-- [ ] [Feature/task]
+### Sprint 1 – Connect/Disconnect (Target: TBD)
+- [ ] `bt-toggle connect` — connect to hardcoded Sony WH-1000XM5 via MAC (#1)
+- [ ] `bt-toggle disconnect` — disconnect cleanly without removing pairing (#1)
 
 ### Sprint 2 – [Name] (Target: TBD)
 - [ ] [Feature/task]

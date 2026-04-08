@@ -2,7 +2,7 @@
 
 CLI-verktyg för att koppla/koppla från Bluetooth-enheter på Windows via Stream Deck
 
-**Stack:** TBD ⚠️ — resolve this in first session
+**Stack:** C# / .NET 8 (Windows.Devices.Bluetooth API)
 **Started:** 2026-04-08
 **GitHub:** github.com/niklasleide/leides-ljuvliga-lilla-bt-toggle
 
