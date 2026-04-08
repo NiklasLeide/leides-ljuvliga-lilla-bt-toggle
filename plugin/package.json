@@ -1,0 +1,13 @@
+{
+  "name": "com.niklasleide.bt-toggle",
+  "version": "1.0.0",
+  "description": "Stream Deck plugin to toggle Bluetooth device connection",
+  "main": "src/plugin.js",
+  "scripts": {
+    "build-native": "powershell.exe -ExecutionPolicy Bypass -File build-native.ps1",
+    "build": "npm run build-native"
+  },
+  "dependencies": {
+    "node-addon-api": "^8.0.0"
+  }
+}

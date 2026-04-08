@@ -1,0 +1,81 @@
+<!--
+  Open this file in a browser to generate the icon PNGs.
+  Right-click each canvas and "Save image as..." with the filename shown.
+  Required sizes: 72x72 (1x) and 144x144 (@2x)
+-->
+<!DOCTYPE html>
+<html>
+<body style="background:#1a1a1a; color:#ccc; font-family:sans-serif; padding:20px;">
+<h2>Stream Deck Icons — right-click to save</h2>
+
+<div style="display:flex; gap:40px;">
+  <div>
+    <p>bt-connected.png (72x72)</p>
+    <canvas id="connected" width="72" height="72"></canvas>
+    <p>bt-connected@2x.png (144x144)</p>
+    <canvas id="connected2x" width="144" height="144"></canvas>
+  </div>
+  <div>
+    <p>bt-disconnected.png (72x72)</p>
+    <canvas id="disconnected" width="72" height="72"></canvas>
+    <p>bt-disconnected@2x.png (144x144)</p>
+    <canvas id="disconnected2x" width="144" height="144"></canvas>
+  </div>
+  <div>
+    <p>bt-error.png (72x72)</p>
+    <canvas id="error" width="72" height="72"></canvas>
+    <p>bt-error@2x.png (144x144)</p>
+    <canvas id="error2x" width="144" height="144"></canvas>
+  </div>
+</div>
+
+<script>
+function drawBtIcon(canvas, color) {
+  const ctx = canvas.getContext("2d");
+  const s = canvas.width;
+  const scale = s / 72;
+
+  // Background
+  ctx.fillStyle = "#000";
+  ctx.beginPath();
+  ctx.roundRect(0, 0, s, s, 8 * scale);
+  ctx.fill();
+
+  // Bluetooth symbol
+  ctx.strokeStyle = color;
+  ctx.lineWidth = 3 * scale;
+  ctx.lineCap = "round";
+  ctx.lineJoin = "round";
+
+  const cx = s / 2;
+  const cy = s / 2;
+  const h = 20 * scale;  // half height
+  const w = 10 * scale;  // half width
+
+  ctx.beginPath();
+  // Left arm top
+  ctx.moveTo(cx - w, cy - h * 0.5);
+  ctx.lineTo(cx + w, cy - h);
+  // Down to center, across to bottom right
+  ctx.lineTo(cx, cy);
+  ctx.lineTo(cx + w, cy + h);
+  // Left arm bottom
+  ctx.lineTo(cx - w, cy + h * 0.5);
+  ctx.stroke();
+
+  // Vertical line
+  ctx.beginPath();
+  ctx.moveTo(cx, cy - h);
+  ctx.lineTo(cx, cy + h);
+  ctx.stroke();
+}
+
+drawBtIcon(document.getElementById("connected"), "#4CAF50");
+drawBtIcon(document.getElementById("connected2x"), "#4CAF50");
+drawBtIcon(document.getElementById("disconnected"), "#888");
+drawBtIcon(document.getElementById("disconnected2x"), "#888");
+drawBtIcon(document.getElementById("error"), "#F44336");
+drawBtIcon(document.getElementById("error2x"), "#F44336");
+</script>
+</body>
+</html>

@@ -1,0 +1,47 @@
+{
+  "Name": "Bluetooth Toggle",
+  "Description": "Connect and disconnect Bluetooth devices with a single button press",
+  "Author": "Niklas Leide",
+  "Icon": "assets/plugin-icon",
+  "URL": "https://github.com/NiklasLeide/leides-ljuvliga-lilla-bt-toggle",
+  "Version": "1.0.0",
+  "SDKVersion": 2,
+  "Software": {
+    "MinimumVersion": "6.0"
+  },
+  "OS": [
+    {
+      "Platform": "windows",
+      "MinimumVersion": "10"
+    }
+  ],
+  "NodeJs": {
+    "Version": "20",
+    "Debug": "enabled"
+  },
+  "UUID": "com.niklasleide.bt-toggle",
+  "CodePath": "src/plugin.js",
+  "Actions": [
+    {
+      "UUID": "com.niklasleide.bt-toggle.toggle",
+      "Name": "Bluetooth Toggle",
+      "Icon": "assets/actions/bt-disconnected",
+      "Tooltip": "Toggle Bluetooth device connection",
+      "PropertyInspectorPath": "ui/property-inspector.html",
+      "States": [
+        {
+          "Image": "assets/actions/bt-disconnected",
+          "Name": "Disconnected",
+          "TitleAlignment": "bottom",
+          "FontSize": "9"
+        },
+        {
+          "Image": "assets/actions/bt-connected",
+          "Name": "Connected",
+          "TitleAlignment": "bottom",
+          "FontSize": "9"
+        }
+      ]
+    }
+  ]
+}
