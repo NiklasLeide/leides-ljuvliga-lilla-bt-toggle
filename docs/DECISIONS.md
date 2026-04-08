@@ -18,6 +18,27 @@ Record of key decisions made during the project. **Newest first.**
 
 ---
 
+### DEC-005: Exclude Handsfree (HFP) service from toggle
+**Date:** 2026-04-09
+**Decision:** Only toggle A2DP Sink and A2DP Source. Never toggle Handsfree.
+**Reasoning:** Toggling Handsfree re-enables the Bluetooth mic. Windows then switches from A2DP (stereo, high quality) to HFP (mono, 8kHz) in any app that requests mic access. User had already disabled Handsfree in Windows Bluetooth settings to avoid this.
+**Alternatives considered:**
+- **Toggle all three services** — rejected. Tested, re-activated mic and caused low-quality audio in games.
+
+---
+
+### DEC-004: C++ N-API addon for Stream Deck plugin Bluetooth calls
+**Date:** 2026-04-08
+**Decision:** Write a C++ N-API addon wrapping BluetoothSetServiceState, compiled with node-gyp/MSVC.
+**Reasoning:** Stream Deck SDK v2 uses Node.js. Need to call native Windows Bluetooth APIs from JS. N-API is the official Node.js native addon interface — stable across versions, no third-party dependency.
+**Alternatives considered:**
+- **Shell out to .exe** — rejected. User preferred clean single-process architecture.
+- **node-ffi-napi** — rejected. Community project, unmaintained fork, fragile.
+- **edge-js (.NET bridge)** — rejected. Adds native module dependency, fragile with Stream Deck's bundled Node.
+- **Koffi** — rejected. Newer FFI lib but still community, not official.
+
+---
+
 ### DEC-003: BluetoothSetServiceState P/Invoke for connect/disconnect
 **Date:** 2026-04-08
 **Decision:** Use native `BluetoothSetServiceState` via P/Invoke to toggle A2DP/Handsfree services on the device.

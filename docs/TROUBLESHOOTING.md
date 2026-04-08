@@ -71,6 +71,25 @@ or git hooks that check documentation is updated before pushing.
 
 ---
 
+## Stream Deck Plugin
+
+### Plugin shows yellow exclamation mark / "has no attached client"
+**Symptom:** Plugin appears in action list but crashes on press, shows yellow exclamation mark.
+**Cause:** `"NodeJs"` in manifest.json (capital S) — Stream Deck expects `"Nodejs"` (lowercase s) and silently fails to launch the Node process.
+**Solution:** Use `"Nodejs": { "Version": "20" }` in manifest.json.
+
+### install.ps1 fails with "Access to bluetooth.node is denied"
+**Symptom:** `Remove-Item` fails when reinstalling the plugin.
+**Cause:** Stream Deck has the `.node` native addon file locked while running.
+**Solution:** Quit Stream Deck first (tray icon > Quit), then run install.ps1, then reopen Stream Deck.
+
+### node-gyp fails with "EPERM mkdir C:\Windows\build"
+**Symptom:** `node-gyp rebuild` fails when run from WSL.
+**Cause:** UNC paths (`\\wsl.localhost\...`) default to `C:\Windows` as working directory, where node-gyp can't write.
+**Solution:** Use `build-native.ps1` which copies to a Windows temp directory before building.
+
+---
+
 ## C# / .NET 10 (Windows.Devices.Bluetooth API) / App
 
 _Add issues here as you encounter them._

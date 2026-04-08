@@ -5,6 +5,7 @@ Types: `feat` | `fix` | `refactor` | `docs` | `chore` | `perf`
 
 ---
 
+[2026-04-09] docs: park project — Sprint 2 complete, all docs updated
 [2026-04-09] chore: remove personal MAC from Property Inspector placeholder
 [2026-04-09] fix: remove Handsfree (HFP) service — was re-enabling mic and forcing low-quality mono audio
 [2026-04-09] perf: make connect/disconnect async via N-API AsyncWorker, show immediate UI feedback
