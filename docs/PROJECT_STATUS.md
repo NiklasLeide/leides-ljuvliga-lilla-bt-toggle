@@ -18,7 +18,7 @@
 ---
 
 ## What's Working Now
-Connect and disconnect working on Sony WH-1000XM5.
+Stream Deck plugin working — toggle button connects/disconnects Sony WH-1000XM5 via A2DP only (no HFP/mic).
 
 ```bash
 cd src && /mnt/c/Program\ Files/dotnet/dotnet.exe build          # build
@@ -46,11 +46,11 @@ _None_
 ### Sprint 2 – Stream Deck Plugin (Active)
 - [x] C++ N-API addon wrapping BluetoothSetServiceState (#2)
 - [x] Stream Deck plugin scaffold (Elgato SDK) (#2)
-- [ ] Single toggle button with connect/disconnect (#2)
-- [ ] State icons: connected (green), disconnected (grey), error (red) (#2)
-- [ ] Auto-detect connection state on load (#2)
-- [ ] Status text on button (#2)
-- [ ] Property Inspector for MAC address config (#2)
+- [x] Single toggle button with connect/disconnect (#2)
+- [x] State icons: connected (green), disconnected (grey), error (red) (#2)
+- [x] Auto-detect connection state on load (#2)
+- [x] Status text on button (#2)
+- [x] Property Inspector for MAC address config (#2)
 
 ### Sprint 3 – [TBD]
 - [ ] Multi-device support
