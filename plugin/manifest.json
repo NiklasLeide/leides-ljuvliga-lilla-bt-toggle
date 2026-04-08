@@ -15,9 +15,8 @@
       "MinimumVersion": "10"
     }
   ],
-  "NodeJs": {
-    "Version": "20",
-    "Debug": "enabled"
+  "Nodejs": {
+    "Version": "20"
   },
   "UUID": "com.niklasleide.bt-toggle",
   "CodePath": "src/plugin.js",

@@ -62,7 +62,16 @@ or git hooks that check documentation is updated before pushing.
 **Solution:** `sudo npm install -g <package>`
 
 ---
-## C# / .NET 8 (har inbyggt Windows.Devices.Bluetooth API / App
+## Bluetooth
+
+### Headphones switch to low-quality mono audio after connect
+**Symptom:** After bt-toggle connect, audio quality drops in games/apps that use mic.
+**Cause:** Toggling the Handsfree (HFP) Bluetooth service re-enables the mic. Windows then switches from A2DP (stereo, high quality) to HFP (mono, low quality) when an app requests mic access.
+**Solution:** Only toggle A2DP Sink and A2DP Source services. Never toggle Handsfree. Fixed in bluetooth.cc and Program.cs by removing HANDSFREE_SERVICE from the services array.
+
+---
+
+## C# / .NET 10 (Windows.Devices.Bluetooth API) / App
 
 _Add issues here as you encounter them._
 

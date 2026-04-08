@@ -26,8 +26,12 @@ const contexts = new Map();
 
 const ws = new WebSocket(`ws://127.0.0.1:${port}`);
 
+ws.on("error", (err) => {
+  // Prevent unhandled error crash
+  console.error("WebSocket error:", err.message);
+});
+
 ws.on("open", () => {
-  // Register the plugin with Stream Deck
   ws.send(JSON.stringify({ event: registerEvent, uuid: pluginUUID }));
 });
 
@@ -55,7 +59,6 @@ function handleWillAppear(msg) {
   const settings = payload.settings || {};
   contexts.set(context, { macAddress: settings.macAddress || "" });
 
-  // Check current connection state and update button
   if (settings.macAddress) {
     updateButtonState(context, settings.macAddress);
   } else {
@@ -74,7 +77,7 @@ function handleDidReceiveSettings(msg) {
   }
 }
 
-function handleKeyDown(msg) {
+async function handleKeyDown(msg) {
   const { context } = msg;
   const ctxData = contexts.get(context);
 
@@ -85,8 +88,6 @@ function handleKeyDown(msg) {
   }
 
   const mac = ctxData.macAddress;
-
-  // Check current state, then toggle
   const status = bluetooth.isConnected(mac);
 
   if (status.error) {
@@ -96,12 +97,17 @@ function handleKeyDown(msg) {
     return;
   }
 
-  let result;
+  // Show immediate feedback
   if (status.connected) {
-    result = bluetooth.disconnect(mac);
+    setTitle(context, "Disconnecting...");
   } else {
-    result = bluetooth.connect(mac);
+    setTitle(context, "Connecting...");
   }
+
+  // Run the slow Bluetooth call on a worker thread (returns Promise)
+  const result = await (status.connected
+    ? bluetooth.disconnect(mac)
+    : bluetooth.connect(mac));
 
   if (result.success) {
     const nowConnected = !status.connected;
@@ -133,7 +139,6 @@ function updateButtonState(context, mac) {
 }
 
 function setErrorState(context) {
-  // Show error icon by setting a red-tinted image
   setState(context, STATE_DISCONNECTED);
   setImage(context, getBase64Image("bt-error"));
 }
@@ -163,7 +168,6 @@ function showAlert(context) {
   ws.send(JSON.stringify({ event: "showAlert", context }));
 }
 
-// Load a base64-encoded SVG for dynamic icon changes
 function getBase64Image(name) {
   try {
     const fs = require("fs");

@@ -57,10 +57,9 @@ class Program
     private const uint BLUETOOTH_SERVICE_DISABLE = 0x00;
 
     // Well-known Bluetooth audio service GUIDs
+    // Only A2DP — NOT Handsfree. HFP enables the mic which forces low-quality mono audio.
     private static readonly Guid AudioSinkServiceId =
         new("0000110b-0000-1000-8000-00805f9b34fb"); // A2DP Sink
-    private static readonly Guid HandsfreeServiceId =
-        new("0000111e-0000-1000-8000-00805f9b34fb"); // Handsfree
     private static readonly Guid AudioSourceServiceId =
         new("0000110a-0000-1000-8000-00805f9b34fb"); // A2DP Source
 
@@ -154,7 +153,7 @@ class Program
         Console.WriteLine($"{action}: {deviceName}");
 
         // Toggle each audio service
-        var services = new[] { AudioSinkServiceId, HandsfreeServiceId, AudioSourceServiceId };
+        var services = new[] { AudioSinkServiceId, AudioSourceServiceId };
         var anySuccess = false;
 
         foreach (var serviceId in services)
