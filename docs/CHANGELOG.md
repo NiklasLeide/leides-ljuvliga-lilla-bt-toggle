@@ -5,6 +5,7 @@ Types: `feat` | `fix` | `refactor` | `docs` | `chore` | `perf`
 
 ---
 
+[2026-04-08] feat: add ws dependency, generate icon SVGs, wire up error state (#2)
 [2026-04-08] feat: Stream Deck plugin scaffold with C++ N-API Bluetooth addon (#2)
 [2026-04-08] fix: use BluetoothSetServiceState P/Invoke for real connect/disconnect (#1)
 [2026-04-08] refactor: move MAC address from hardcoded constant to .env file

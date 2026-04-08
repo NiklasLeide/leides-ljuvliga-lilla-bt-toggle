@@ -163,13 +163,13 @@ function showAlert(context) {
   ws.send(JSON.stringify({ event: "showAlert", context }));
 }
 
-// Load a base64-encoded SVG or PNG for dynamic icon changes
+// Load a base64-encoded SVG for dynamic icon changes
 function getBase64Image(name) {
   try {
     const fs = require("fs");
-    const imgPath = path.join(__dirname, "..", "assets", "actions", `${name}.png`);
+    const imgPath = path.join(__dirname, "..", "assets", "actions", `${name}.svg`);
     const data = fs.readFileSync(imgPath);
-    return `data:image/png;base64,${data.toString("base64")}`;
+    return `data:image/svg+xml;base64,${data.toString("base64")}`;
   } catch {
     return "";
   }
