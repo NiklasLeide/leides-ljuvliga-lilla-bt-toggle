@@ -16,8 +16,10 @@ These files ARE Claude's memory between sessions. Keep them accurate.
 
 ## Commands
 ```bash
-# ⚠️ Run /dev command NOT YET FILLED IN — fill in via /project:init
-# [test command TBD — fill in via /project:init]
+cd src && /mnt/c/Program\ Files/dotnet/dotnet.exe build   # build
+cd src && /mnt/c/Program\ Files/dotnet/dotnet.exe run -- connect   # run (connect)
+cd src && /mnt/c/Program\ Files/dotnet/dotnet.exe run -- disconnect # run (disconnect)
+# [test command TBD — add when tests exist]
 ./commit.sh "message"       # ALWAYS use this to commit — never bare git commit
 ```
 

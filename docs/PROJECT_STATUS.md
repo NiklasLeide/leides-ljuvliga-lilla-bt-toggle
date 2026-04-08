@@ -1,7 +1,7 @@
 # Project Status — leides-ljuvliga-lilla-bt-toggle
 
 > **Last updated:** 2026-04-08
-> **Current sprint:** Sprint 0 – Setup
+> **Current sprint:** Sprint 1 – Connect/Disconnect
 > **Sprint dates:** 2026-04-08 → TBD
 
 ---
@@ -18,11 +18,12 @@
 ---
 
 ## What's Working Now
-_Nothing yet — fill this in as components come online._
+Project builds. Connect/disconnect implemented but **untested** — needs real MAC address and Windows-side testing.
 
 ```bash
-# Add runnable commands here as they become available
-# e.g.: python main.py    ← starts the app
+cd src && /mnt/c/Program\ Files/dotnet/dotnet.exe build          # build
+cd src && /mnt/c/Program\ Files/dotnet/dotnet.exe run -- connect  # connect
+cd src && /mnt/c/Program\ Files/dotnet/dotnet.exe run -- disconnect # disconnect
 ```
 
 ---
@@ -34,9 +35,13 @@ _None_
 
 ## Sprint Backlog
 
-### Sprint 1 – Connect/Disconnect (Target: TBD)
-- [ ] `bt-toggle connect` — connect to hardcoded Sony WH-1000XM5 via MAC (#1)
-- [ ] `bt-toggle disconnect` — disconnect cleanly without removing pairing (#1)
+### Sprint 1 – Connect/Disconnect (Active)
+- [x] Scaffold .NET 10 console project with WinRT Bluetooth APIs
+- [x] `bt-toggle connect` — initial implementation (#1)
+- [x] `bt-toggle disconnect` — initial implementation (#1)
+- [ ] Replace placeholder MAC address with real Sony WH-1000XM5 address
+- [ ] Test connect on Windows
+- [ ] Test disconnect on Windows
 
 ### Sprint 2 – [Name] (Target: TBD)
 - [ ] [Feature/task]
