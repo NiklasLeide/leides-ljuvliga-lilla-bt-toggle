@@ -1,4 +1,5 @@
 using System;
+using System.IO;
 using System.Threading.Tasks;
 using Windows.Devices.Bluetooth;
 using Windows.Devices.Enumeration;
@@ -7,10 +8,6 @@ namespace BtToggle;
 
 class Program
 {
-    // Sony WH-1000XM5 — hardcoded for now
-    // Replace with your device's MAC address (format: XX:XX:XX:XX:XX:XX)
-    private const string TargetMacAddress = "00:00:00:00:00:00";
-
     static async Task<int> Main(string[] args)
     {
         if (args.Length < 1)
@@ -19,19 +16,50 @@ class Program
             return 1;
         }
 
+        var macAddress = LoadMacAddress();
+        if (macAddress == null) return 1;
+
         var command = args[0].ToLowerInvariant();
 
         return command switch
         {
-            "connect" => await ConnectAsync(),
-            "disconnect" => await DisconnectAsync(),
+            "connect" => await ConnectAsync(macAddress),
+            "disconnect" => await DisconnectAsync(macAddress),
             _ => ShowUnknownCommand(command)
         };
     }
 
-    private static async Task<int> ConnectAsync()
+    private static string? LoadMacAddress()
     {
-        var device = await GetDeviceAsync();
+        // Look for .env next to the executable, then in the project root
+        var envPaths = new[]
+        {
+            Path.Combine(AppContext.BaseDirectory, ".env"),
+            Path.Combine(AppContext.BaseDirectory, "..", "..", "..", ".env"),
+        };
+
+        foreach (var path in envPaths)
+        {
+            if (!File.Exists(path)) continue;
+
+            foreach (var line in File.ReadAllLines(path))
+            {
+                var trimmed = line.Trim();
+                if (trimmed.StartsWith("BT_MAC_ADDRESS="))
+                {
+                    return trimmed["BT_MAC_ADDRESS=".Length..].Trim().Trim('"');
+                }
+            }
+        }
+
+        Console.Error.WriteLine("BT_MAC_ADDRESS not found.");
+        Console.Error.WriteLine("Create a .env file with: BT_MAC_ADDRESS=XX:XX:XX:XX:XX:XX");
+        return null;
+    }
+
+    private static async Task<int> ConnectAsync(string targetMac)
+    {
+        var device = await GetDeviceAsync(targetMac);
         if (device == null) return 1;
 
         using (device)
@@ -57,14 +85,12 @@ class Program
         }
     }
 
-    private static async Task<int> DisconnectAsync()
+    private static async Task<int> DisconnectAsync(string targetMac)
     {
-        // Find the device via DeviceInformation so we can call Disable/Enable-like ops.
-        // WinRT doesn't have a direct "disconnect" — we find paired device and close the connection.
         var selector = BluetoothDevice.GetDeviceSelectorFromPairingState(true);
         var devices = await DeviceInformation.FindAllAsync(selector);
 
-        var macLookup = ParseMacAddress(TargetMacAddress);
+        var macLookup = ParseMacAddress(targetMac);
 
         foreach (var deviceInfo in devices)
         {
@@ -96,14 +122,14 @@ class Program
         return 0;
     }
 
-    private static async Task<BluetoothDevice?> GetDeviceAsync()
+    private static async Task<BluetoothDevice?> GetDeviceAsync(string targetMac)
     {
-        var macAddress = ParseMacAddress(TargetMacAddress);
+        var macAddress = ParseMacAddress(targetMac);
         var device = await BluetoothDevice.FromBluetoothAddressAsync(macAddress);
 
         if (device == null)
         {
-            Console.Error.WriteLine($"Device not found: {TargetMacAddress}");
+            Console.Error.WriteLine($"Device not found: {targetMac}");
             Console.Error.WriteLine("Make sure the device is paired in Windows Bluetooth settings.");
             return null;
         }

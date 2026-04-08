@@ -5,6 +5,7 @@ Types: `feat` | `fix` | `refactor` | `docs` | `chore` | `perf`
 
 ---
 
+[2026-04-08] refactor: move MAC address from hardcoded constant to .env file
 [2026-04-08] chore: add .NET bin/obj to .gitignore, remove tracked build artifacts
 [2026-04-08] feat: scaffold bt-toggle CLI with connect/disconnect commands (#1)
 [2026-04-08] docs: update stack to .NET 10 LTS, add DEC-002 dev environment decision
