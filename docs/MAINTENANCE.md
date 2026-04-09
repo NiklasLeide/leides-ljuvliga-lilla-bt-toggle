@@ -64,7 +64,7 @@ powershell.exe -ExecutionPolicy Bypass -File plugin/build-native.ps1
 ```
 
 ## Last parked
-**2026-04-09** — Sprint 2 complete. Stream Deck plugin working with toggle button, state icons, and A2DP-only connect/disconnect.
+**2026-04-09** — Sprint 3 partial. Button mode setting added (toggle/connect only/disconnect only). Multi-device and connection listener still todo.
 
 ---
 > Update the "How to run" section the moment you figure out the setup.

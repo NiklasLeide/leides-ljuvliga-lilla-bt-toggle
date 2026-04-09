@@ -88,6 +88,17 @@ or git hooks that check documentation is updated before pushing.
 **Cause:** UNC paths (`\\wsl.localhost\...`) default to `C:\Windows` as working directory, where node-gyp can't write.
 **Solution:** Use `build-native.ps1` which copies to a Windows temp directory before building.
 
+### How to rebuild and reinstall the plugin
+**Steps:**
+1. Quit Stream Deck (tray icon > Quit)
+2. Open PowerShell on Windows
+3. `cd \\wsl.localhost\Ubuntu-24.04\home\niklas\projects\leides-ljuvliga-lilla-bt-toggle\plugin`
+4. `.\build-native.ps1`
+5. `.\install.ps1`
+6. Reopen Stream Deck
+
+**Note:** The scripts are in `plugin/`, not the repo root. The WSL distro is `Ubuntu-24.04`, not `Ubuntu`.
+
 ---
 
 ## C# / .NET 10 (Windows.Devices.Bluetooth API) / App

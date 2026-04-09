@@ -5,6 +5,8 @@ Types: `feat` | `fix` | `refactor` | `docs` | `chore` | `perf`
 
 ---
 
+[2026-04-09] docs: park project — Sprint 3 partial, button mode feature complete
+[2026-04-09] docs: add rebuild/install instructions to TROUBLESHOOTING with correct paths
 [2026-04-09] feat: add button mode setting — toggle, connect only, or disconnect only
 [2026-04-09] docs: park project — Sprint 2 complete, all docs updated
 [2026-04-09] chore: remove personal MAC from Property Inspector placeholder

@@ -1,17 +1,18 @@
 # Project Status — leides-ljuvliga-lilla-bt-toggle
 
 > **Last updated:** 2026-04-09
-> **Current sprint:** Sprint 3 (in progress)
-> **Sprint dates:** 2026-04-09 →
+> **Current sprint:** Parked (Sprint 3 partially complete)
+> **Sprint dates:** 2026-04-09
 
 ---
 
-## Current State
+## Parked on 2026-04-09:
 - **Working:** Stream Deck plugin with configurable button mode (toggle / connect only / disconnect only). Connects/disconnects Sony WH-1000XM5 via A2DP. State icons, auto-detect, Property Inspector config all functional.
-- **In progress:** Sprint 3 — button mode feature done, multi-device and connection event listener remaining.
-- **Gotchas:
-  - Must build native addon from Windows (node-gyp can't use WSL UNC paths) — use `build-native.ps1`
-  - Must quit Stream Deck before reinstalling plugin (locks .node file) — use `install.ps1`
+- **What's next:** Sprint 3 remainder — multi-device support, connection event listener.
+- **Gotchas on return:**
+  - Must build native addon from Windows PowerShell in `plugin/` dir — use `.\build-native.ps1` then `.\install.ps1`
+  - Navigate via `cd \\wsl.localhost\Ubuntu-24.04\home\niklas\projects\leides-ljuvliga-lilla-bt-toggle\plugin`
+  - Must quit Stream Deck before reinstalling plugin (locks .node file)
   - Handsfree (HFP) service is deliberately excluded — re-adding it re-enables mic and causes mono audio
   - manifest.json uses `"Nodejs"` (lowercase s) not `"NodeJs"` — Stream Deck won't launch the plugin otherwise
 
