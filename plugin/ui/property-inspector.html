@@ -37,9 +37,19 @@
       font-family: monospace;
       font-size: 12px;
     }
-    input[type="text"]:focus {
+    input[type="text"]:focus,
+    select:focus {
       outline: none;
       border-color: #0078d4;
+    }
+    select {
+      flex: 1;
+      padding: 4px 8px;
+      border: 1px solid #444;
+      border-radius: 3px;
+      background: #1a1a1a;
+      color: #ccc;
+      font-size: 12px;
     }
     .hint {
       color: #666;
@@ -56,6 +66,14 @@
     </div>
     <div class="hint">
       Find in Windows: Settings &gt; Bluetooth &gt; Device &gt; Properties
+    </div>
+    <div class="sdpi-item">
+      <label for="mode">Mode</label>
+      <select id="mode">
+        <option value="toggle">Toggle</option>
+        <option value="connect">Connect only</option>
+        <option value="disconnect">Disconnect only</option>
+      </select>
     </div>
   </div>
 
@@ -80,31 +98,39 @@
       ws.onmessage = (event) => {
         const msg = JSON.parse(event.data);
         if (msg.event === "didReceiveSettings") {
-          const settings = msg.payload.settings || {};
-          if (settings.macAddress) {
-            document.getElementById("macAddress").value = settings.macAddress;
-          }
+          loadSettings(msg.payload.settings || {});
         }
       };
 
       // Load existing settings from actionInfo
-      const settings = actionInfo.payload.settings || {};
+      loadSettings(actionInfo.payload.settings || {});
+    }
+
+    function loadSettings(settings) {
       if (settings.macAddress) {
         document.getElementById("macAddress").value = settings.macAddress;
       }
+      if (settings.mode) {
+        document.getElementById("mode").value = settings.mode;
+      }
     }
 
-    // Save settings when input changes
-    document.getElementById("macAddress").addEventListener("change", () => {
-      const macAddress = document.getElementById("macAddress").value.trim();
+    function saveSettings() {
       if (ws && ws.readyState === WebSocket.OPEN) {
         ws.send(JSON.stringify({
           event: "setSettings",
           context: uuid,
-          payload: { macAddress }
+          payload: {
+            macAddress: document.getElementById("macAddress").value.trim(),
+            mode: document.getElementById("mode").value,
+          }
         }));
       }
-    });
+    }
+
+    // Save settings when any input changes
+    document.getElementById("macAddress").addEventListener("change", saveSettings);
+    document.getElementById("mode").addEventListener("change", saveSettings);
   </script>
 </body>
 </html>

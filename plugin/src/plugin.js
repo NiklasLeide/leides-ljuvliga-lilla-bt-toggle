@@ -57,7 +57,10 @@ ws.on("message", (data) => {
 function handleWillAppear(msg) {
   const { context, payload } = msg;
   const settings = payload.settings || {};
-  contexts.set(context, { macAddress: settings.macAddress || "" });
+  contexts.set(context, {
+    macAddress: settings.macAddress || "",
+    mode: settings.mode || "toggle",
+  });
 
   if (settings.macAddress) {
     updateButtonState(context, settings.macAddress);
@@ -70,7 +73,10 @@ function handleWillAppear(msg) {
 function handleDidReceiveSettings(msg) {
   const { context, payload } = msg;
   const settings = payload.settings || {};
-  contexts.set(context, { macAddress: settings.macAddress || "" });
+  contexts.set(context, {
+    macAddress: settings.macAddress || "",
+    mode: settings.mode || "toggle",
+  });
 
   if (settings.macAddress) {
     updateButtonState(context, settings.macAddress);
@@ -88,6 +94,7 @@ async function handleKeyDown(msg) {
   }
 
   const mac = ctxData.macAddress;
+  const mode = ctxData.mode || "toggle";
   const status = bluetooth.isConnected(mac);
 
   if (status.error) {
@@ -97,22 +104,38 @@ async function handleKeyDown(msg) {
     return;
   }
 
-  // Show immediate feedback
-  if (status.connected) {
-    setTitle(context, "Disconnecting...");
+  // Determine desired action based on mode and current state
+  let shouldConnect;
+  if (mode === "connect") {
+    if (status.connected) {
+      setTitle(context, "Already\nconnected");
+      showOk(context);
+      return;
+    }
+    shouldConnect = true;
+  } else if (mode === "disconnect") {
+    if (!status.connected) {
+      setTitle(context, "Already\ndisconnected");
+      showOk(context);
+      return;
+    }
+    shouldConnect = false;
   } else {
-    setTitle(context, "Connecting...");
+    // toggle (default)
+    shouldConnect = !status.connected;
   }
 
+  // Show immediate feedback
+  setTitle(context, shouldConnect ? "Connecting..." : "Disconnecting...");
+
   // Run the slow Bluetooth call on a worker thread (returns Promise)
-  const result = await (status.connected
-    ? bluetooth.disconnect(mac)
-    : bluetooth.connect(mac));
+  const result = await (shouldConnect
+    ? bluetooth.connect(mac)
+    : bluetooth.disconnect(mac));
 
   if (result.success) {
-    const nowConnected = !status.connected;
-    setState(context, nowConnected ? STATE_CONNECTED : STATE_DISCONNECTED);
-    setTitle(context, nowConnected ? status.name || "Connected" : "Disconnected");
+    setState(context, shouldConnect ? STATE_CONNECTED : STATE_DISCONNECTED);
+    setTitle(context, shouldConnect ? status.name || "Connected" : "Disconnected");
     showOk(context);
   } else {
     setTitle(context, "Error");

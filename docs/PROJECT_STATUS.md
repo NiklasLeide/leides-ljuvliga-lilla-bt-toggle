@@ -1,15 +1,15 @@
 # Project Status — leides-ljuvliga-lilla-bt-toggle
 
 > **Last updated:** 2026-04-09
-> **Current sprint:** Parked (Sprint 2 complete)
-> **Sprint dates:** 2026-04-08 → 2026-04-09
+> **Current sprint:** Sprint 3 (in progress)
+> **Sprint dates:** 2026-04-09 →
 
 ---
 
-## Parked on 2026-04-09:
-- **Working:** Stream Deck plugin with toggle button — connects/disconnects Sony WH-1000XM5 via A2DP. State icons, auto-detect, Property Inspector config all functional.
-- **What's next:** Sprint 3 — multi-device support, connection event listener (update icon if device disconnects externally).
-- **Gotchas on return:**
+## Current State
+- **Working:** Stream Deck plugin with configurable button mode (toggle / connect only / disconnect only). Connects/disconnects Sony WH-1000XM5 via A2DP. State icons, auto-detect, Property Inspector config all functional.
+- **In progress:** Sprint 3 — button mode feature done, multi-device and connection event listener remaining.
+- **Gotchas:
   - Must build native addon from Windows (node-gyp can't use WSL UNC paths) — use `build-native.ps1`
   - Must quit Stream Deck before reinstalling plugin (locks .node file) — use `install.ps1`
   - Handsfree (HFP) service is deliberately excluded — re-adding it re-enables mic and causes mono audio
@@ -29,7 +29,7 @@
 ---
 
 ## What's Working Now
-Stream Deck plugin working — toggle button connects/disconnects Sony WH-1000XM5 via A2DP only (no HFP/mic).
+Stream Deck plugin working — button connects/disconnects Sony WH-1000XM5 via A2DP only (no HFP/mic). Button mode configurable in Property Inspector: toggle (default), connect only, or disconnect only.
 
 ```bash
 cd src && /mnt/c/Program\ Files/dotnet/dotnet.exe build          # build
@@ -63,7 +63,8 @@ _None_
 - [x] Status text on button (#2)
 - [x] Property Inspector for MAC address config (#2)
 
-### Sprint 3 – [TBD]
+### Sprint 3 – Enhancements (In Progress)
+- [x] Button mode setting: toggle, connect only, disconnect only
 - [ ] Multi-device support
 - [ ] Connection event listener
 
